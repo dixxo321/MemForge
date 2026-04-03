@@ -8,6 +8,7 @@ from sqlmodel import Session
 
 from app.models import RetrievalLog
 from app.repositories import MemoryRepository, RetrievalLogRepository
+from app.retrieval.prompt_builder import build_prompt_context
 from app.retrieval.ranking import normalize_query, rank_memories
 
 
@@ -53,3 +54,23 @@ class RetrievalService:
         self.retrieval_log_repository.create(session, log)
 
         return ranked
+
+    def recall_for_prompt(
+        self,
+        session: Session,
+        query: str,
+        user_id: Optional[str] = None,
+        agent_id: Optional[str] = None,
+        limit: int = 5,
+    ) -> dict[str, Any]:
+        results = self.search(
+            session=session,
+            query=query,
+            user_id=user_id,
+            agent_id=agent_id,
+            limit=limit,
+        )
+        return {
+            "results": results,
+            "context_text": build_prompt_context(results, max_items=limit),
+        }

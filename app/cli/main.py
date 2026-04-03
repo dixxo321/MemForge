@@ -1,6 +1,5 @@
 import argparse
 import json
-from typing import Optional
 
 from sqlmodel import Session
 
@@ -59,6 +58,7 @@ def cmd_list_memories(args: argparse.Namespace) -> None:
                         "memory_type": str(memory.memory_type),
                         "content": memory.content,
                         "summary": memory.summary,
+                        "access_count": memory.access_count,
                     },
                     indent=2,
                 )
@@ -90,6 +90,19 @@ def cmd_search_memory(args: argparse.Namespace) -> None:
                     indent=2,
                 )
             )
+
+
+def cmd_recall_prompt(args: argparse.Namespace) -> None:
+    service = RetrievalService()
+    with Session(engine) as session:
+        payload = service.recall_for_prompt(
+            session=session,
+            query=args.query,
+            user_id=args.user_id,
+            agent_id=args.agent_id,
+            limit=args.limit,
+        )
+        print(payload["context_text"])
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -124,6 +137,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--agent-id", default=None)
     p.add_argument("--limit", type=int, default=10)
     p.set_defaults(func=cmd_search_memory)
+
+    p = subparsers.add_parser("recall-prompt")
+    p.add_argument("query")
+    p.add_argument("--user-id", default=None)
+    p.add_argument("--agent-id", default=None)
+    p.add_argument("--limit", type=int, default=5)
+    p.set_defaults(func=cmd_recall_prompt)
 
     return parser
 
