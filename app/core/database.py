@@ -4,6 +4,9 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from app.core.config import get_settings
 
+# Import models so SQLModel metadata is registered before create_all().
+from app.models import *  # noqa: F401,F403
+
 settings = get_settings()
 
 connect_args = {"check_same_thread": False} if settings.is_sqlite else {}
@@ -15,11 +18,6 @@ engine = create_engine(
 
 
 def init_db() -> None:
-    """
-    Bootstrap database tables for early local development.
-
-    Later, Alembic migrations will become the primary schema management path.
-    """
     SQLModel.metadata.create_all(engine)
 
 
