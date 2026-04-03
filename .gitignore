@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+
+# Env files
+.env
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Test / cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS / editor
+.DS_Store
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Local vector data
+.memforge/
